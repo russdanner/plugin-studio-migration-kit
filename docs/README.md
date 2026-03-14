@@ -1,4 +1,5 @@
-# Migration Kit
+# CrafterCMS Migration Kit
+This tool helps you bulk migrate / import your content into CrafterCMS.
 
 ## Project Layout
 
