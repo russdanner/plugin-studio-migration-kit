@@ -25,6 +25,8 @@ The content importer scripts can handle:
   - content-import/data-sources.csv
   - content.csv
 
+See **`content-import/docs/CSV_MIGRATION_README.md`** for CSV format and individual script usage.
+
 #### Run the Content Import
 From the **Crafter sandbox root** (directory that contains `migration-kit/` and `config/`):
 
@@ -35,7 +37,3 @@ python3 migration-kit/import.py
 ### Test
 - Commit the changes made by the script to your sandbox
 - Use Crafter Studio to test content types, content forms and the Experience Builder temnplates created by the importer.
-
-
-
-See **`content-import/docs/CSV_MIGRATION_README.md`** for CSV format and individual script usage.
