@@ -26,10 +26,13 @@ All migration kit files live under:
     - `generate_generic_template.py` – Generates FTL from a content type’s form-definition.
     - `generate_content_type_docs.py` – Writes Markdown docs from `config/studio/content-types/`.
     - `check-templates.py` – Checks preview URLs for FreeMarker errors. **Paths are data-driven**: discovers all pages by listing `site/website` for `index.xml` files (no hardcoded URL list).
+    - `import_assets.py` – Import images, videos, and documents from `content-import/assets-to-import` into `static-assets`. Supports copy mode (copy files) or blob mode (create `.blob` XML with storeId and content hash for S3/blob storage).
+    - `cleanup_import_data.py` – **Manual only.** Empties `content-import/assets-to-import` and strips all data rows from the CSVs (keeps headers). Use to reset before a fresh import.
     - `add_extra_site_navigators.py` – Optional post-import step.
   - **`docs/`** – Optional docs folder; can be used as output for generated content-type docs (`import.py --docs-dir migration-kit/docs`).
   - **`content-import/`**
     - `content-types.csv`, `content.csv`, `datasources.csv` (actual data; importer reads from here)
+    - `assets-to-import/` – Folder for images, videos, PDFs, etc. Used by `import_assets.py`; cleared by `cleanup_import_data.py`.
     - `docs/CSV_MIGRATION_README.md` (end‑user documentation)
     - `examples/source_site` (embedded copy of the original **hello** site used as the parity reference)
     - `examples/example-import-data/` (reference copy of the CSV data for kit users; importer does not use this folder)
@@ -336,6 +339,18 @@ Some specific patterns we already had to fix (and should remember):
      python3 migration-kit/sub-scripts/check-templates.py
      ```
    - This discovers all page paths under `site/website` and checks each URL for FreeMarker errors. Override with `--sandbox` and `--site` if needed.
+5. **Import assets (optional)**:
+   - Place files in `content-import/assets-to-import/`, then run:
+     ```bash
+     python3 migration-kit/sub-scripts/import_assets.py
+     ```
+   - Choose copy mode (files copied into `static-assets`) or blob mode (`.blob` XML only; binaries go to S3/blob store). Use `--blobs` / `--no-blobs` to skip the prompt.
+6. **Cleanup import data (manual only)**:
+   - To reset for a fresh run: empty `assets-to-import` and clear CSV data rows (headers kept):
+     ```bash
+     python3 migration-kit/sub-scripts/cleanup_import_data.py
+     ```
+   - Use `--yes` to skip the confirmation prompt.
 
 ### 10.1 Data-driven vs convention-specific
 

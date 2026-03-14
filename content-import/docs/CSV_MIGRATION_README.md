@@ -161,6 +161,62 @@ Exits with status 1 if any checked URL returns a FreeMarker template error or if
 
 ---
 
+## Import assets
+
+**`import_assets.py`** (in `migration-kit/sub-scripts/`) imports images, videos, and documents from **`content-import/assets-to-import/`** into the project’s **`static-assets`** folder.
+
+- **Copy mode (`--no-blobs`):** Recursively copies all files into `static-assets`, preserving directory structure.
+- **Blob mode (`--blobs`):** Does not copy binaries. Creates a `.blob` XML file at each asset path (e.g. `photo.jpg` → `static-assets/images/photo.jpg.blob`) with `storeId` (e.g. `s3-store`) and a content hash. The actual file is assumed to be in blob/S3 storage.
+
+If you omit both `--blobs` and `--no-blobs`, the script prompts: *Do you plan to use BLOBS (blob storage) for these assets? [y/N]*
+
+### Usage
+
+From the **sandbox root**:
+
+```bash
+# Prompt for mode, then run
+python3 migration-kit/sub-scripts/import_assets.py
+
+# Copy files into static-assets
+python3 migration-kit/sub-scripts/import_assets.py --no-blobs
+
+# Create .blob XMLs only (for S3/blob store)
+python3 migration-kit/sub-scripts/import_assets.py --blobs
+
+# Custom paths
+python3 migration-kit/sub-scripts/import_assets.py --sandbox /path/to/sandbox --assets-dir /path/to/assets-to-import --blobs --dry-run
+```
+
+- **`--sandbox`** – Sandbox root (default: parent of `migration-kit`).
+- **`--assets-dir`** – Source folder (default: `migration-kit/content-import/assets-to-import`).
+- **`--dry-run`** – Report what would be done without writing files.
+
+---
+
+## Cleanup import data
+
+**`cleanup_import_data.py`** (in `migration-kit/sub-scripts/`) is for **manual use only**. It resets import data so you can run a fresh import:
+
+1. **Empties** `content-import/assets-to-import/` (removes all contents; leaves the folder).
+2. **Strips data rows** from `content-types.csv`, `content.csv`, and `datasources.csv` in `content-import/`, leaving only the header row in each file.
+
+The script asks for confirmation unless you pass `--yes` or `-y`.
+
+### Usage
+
+From the **sandbox root**:
+
+```bash
+# Interactive (prompt before running)
+python3 migration-kit/sub-scripts/cleanup_import_data.py
+
+# Non-interactive
+python3 migration-kit/sub-scripts/cleanup_import_data.py --yes
+```
+
+---
+
 ## Content Types CSV (`content-types.csv`)
 
 Defines content type structure (types and their fields). Use this to create or update content type definitions before importing content.

@@ -23,6 +23,10 @@ Options:
   --types-only         Only import content types from CSV; skip content.
   --skip-templates     Do not run the generic template generator for content types.
   --skip-docs          Do not run the content-type documentation generator.
+  --skip-assets        Do not run the asset import (content-import/assets-to-import -> static-assets).
+  --assets-blobs       Run asset import in blob mode (create .blob XMLs; no prompt).
+  --assets-copy        Run asset import in copy mode (copy files; no prompt).
+                       If neither --assets-blobs nor --assets-copy is set, the asset script will prompt when run.
   --docs-dir PATH      Where to write generated docs (default: sandbox/docs).
                        Use migration-kit/docs to write into the kit, e.g. docs-dir=migration-kit/docs.
 """
@@ -109,6 +113,21 @@ def main() -> None:
         help="Do not run the content-type documentation generator",
     )
     ap.add_argument(
+        "--skip-assets",
+        action="store_true",
+        help="Do not run the asset import (assets-to-import -> static-assets)",
+    )
+    ap.add_argument(
+        "--assets-blobs",
+        action="store_true",
+        help="Run asset import in blob mode (no prompt)",
+    )
+    ap.add_argument(
+        "--assets-copy",
+        action="store_true",
+        help="Run asset import in copy mode (no prompt)",
+    )
+    ap.add_argument(
         "--docs-dir",
         type=Path,
         default=Path("docs"),
@@ -144,7 +163,36 @@ def main() -> None:
     if r.returncode != 0:
         sys.exit(r.returncode)
 
-    # 2. Generic FTL templates for each content type
+    # 2. Asset import (assets-to-import -> static-assets)
+    if not args.skip_assets and (args.assets_blobs or args.assets_copy or not args.dry_run):
+        assets_script = sub_scripts / "import_assets.py"
+        assets_dir = content_import / "assets-to-import"
+        if assets_script.exists():
+            if assets_dir.exists() and any(assets_dir.iterdir()):
+                cmd_assets = [
+                    sys.executable,
+                    str(assets_script),
+                    "--sandbox",
+                    str(sandbox),
+                    "--assets-dir",
+                    str(assets_dir),
+                ]
+                if args.assets_blobs:
+                    cmd_assets.append("--blobs")
+                elif args.assets_copy:
+                    cmd_assets.append("--no-blobs")
+                if args.dry_run:
+                    cmd_assets.append("--dry-run")
+                print("Running asset import...")
+                r = subprocess.run(cmd_assets, cwd=str(sandbox))
+                if r.returncode != 0:
+                    sys.exit(r.returncode)
+            else:
+                print("Skipping assets: content-import/assets-to-import is empty or missing.", file=sys.stderr)
+        else:
+            print("Skipping assets: import_assets.py not found.", file=sys.stderr)
+
+    # 3. Generic FTL templates for each content type
     if not args.skip_templates and not args.dry_run:
         template_script = sub_scripts / "generate_generic_template.py"
         ct_root = sandbox / "config" / "studio" / "content-types"
@@ -179,7 +227,7 @@ def main() -> None:
             elif not ct_root.exists():
                 print("Skipping templates: config/studio/content-types not found.", file=sys.stderr)
 
-    # 3. Content-type documentation
+    # 4. Content-type documentation
     if not args.skip_docs:
         docs_script = sub_scripts / "generate_content_type_docs.py"
         if docs_script.exists():

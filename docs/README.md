@@ -4,8 +4,8 @@
 
 - **`migration-kit/`**
   - **`import.py`** – Parent script: runs CSV import, optional template generation, then (optionally) content-type doc generation.
-  - **`sub-scripts/`** – Individual Python scripts (import, template generator, doc generator, check-templates, etc.).
-  - **`content-import/`** – Actual CSV data used by the importer: `content-types.csv`, `datasources.csv`, `content.csv`, plus `content-import/docs/CSV_MIGRATION_README.md`. A reference copy of the same data lives in `content-import/examples/example-import-data/` for anyone using the kit.
+  - **`sub-scripts/`** – Individual Python scripts (import, template generator, doc generator, check-templates, asset import, cleanup, etc.).
+  - **`content-import/`** – Actual CSV data used by the importer: `content-types.csv`, `datasources.csv`, `content.csv`, plus `content-import/docs/CSV_MIGRATION_README.md`. Optional folder `content-import/assets-to-import/` holds images, videos, and documents for the asset import script. A reference copy of the same data lives in `content-import/examples/example-import-data/` for anyone using the kit.
   - **`docs/`** – This folder; optional output for generated content-type docs when using `import.py --docs-dir migration-kit/docs`.
 
 ## Content Import
@@ -23,8 +23,9 @@ The content importer scripts can handle:
 - Add the migration git to your project at the `SANDBOX ROOT`
 - Create the CSV files that contain your content model and content
   - content-import/content-types.csv
-  - content-import/data-sources.csv
-  - content.csv
+  - content-import/datasources.csv
+  - content-import/content.csv
+  - Optionally, add assets (images, videos, PDFs, etc.) under content-import/assets-to-import/
 
 See **`content-import/docs/CSV_MIGRATION_README.md`** for CSV format and individual script usage.
 
@@ -35,6 +36,22 @@ From the **Crafter sandbox root** (directory that contains `migration-kit/` and 
 # Run full migration (content types + content + content-type docs into sandbox/docs)
 python3 migration-kit/import.py
 ```
+### Import assets (optional)
+From the sandbox root, import files from `content-import/assets-to-import/` into `static-assets`:
+```bash
+# Copy files into static-assets, or create .blob XMLs for S3 (script will prompt)
+python3 migration-kit/sub-scripts/import_assets.py
+python3 migration-kit/sub-scripts/import_assets.py --no-blobs   # copy mode
+python3 migration-kit/sub-scripts/import_assets.py --blobs      # blob mode
+```
+
+### Cleanup import data (manual only)
+To reset for a fresh import (empty assets-to-import and clear CSV data rows, keeping headers):
+```bash
+python3 migration-kit/sub-scripts/cleanup_import_data.py
+python3 migration-kit/sub-scripts/cleanup_import_data.py --yes  # skip confirmation
+```
+
 ### Test
 - Commit the changes made by the script to your sandbox
-- Use Crafter Studio to test content types, content forms and the Experience Builder temnplates created by the importer.
+- Use Crafter Studio to test content types, content forms and the Experience Builder templates created by the importer.
