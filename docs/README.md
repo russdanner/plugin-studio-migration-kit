@@ -15,11 +15,12 @@ The content importer scripts can handle:
 - Shared and embedded content relationships
 - Importing images directly
 - Creating blob objects and importing images into S3
+- Create generic templates for Experience Builder Editing
   
 ### Basic instructions:
 
 #### Prepare the data / content
-- Add the migration git to your project at the `SANDBOX ROOT`1=
+- Add the migration git to your project at the `SANDBOX ROOT`
 - Create the CSV files that contain your content model and content
   - content-import/content-types.csv
   - content-import/data-sources.csv
