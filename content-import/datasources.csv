@@ -1,0 +1,17 @@
+Datasource ID,Type,Title,Interface,Repo Path,Browse Path,Base Repository Path,Base Browse Path,Content Types,Allow Shared,Allow Embedded,Enable Browse,Enable Search,Enable Create New,Enable Browse Existing,Enable Search Existing,Component Path,Tags,Use Search
+existingImages,img-repository-upload,Existing Images,image,/static-assets/images/,,,,,,,,,,false
+uploadImages,img-desktop-upload,Upload Images,image,/static-assets/item/images/{yyyy}/{mm}/{dd}/,,,,,,,,,,,
+existing_images,img-repository-upload,Existing Images,image,/static-assets/images,,,,,,,,,,,
+upload_image,img-desktop-upload,Upload Images,image,/static-assets/item/images/{yyyy}/{mm}/{dd}/,,,,,,,,,,,
+components-header,shared-content,Components Header,item,/site/components/headers/,,,,,,,,,true,true,,,
+components-left-rail,shared-content,Components Left Rail,item,/site/components/left-rails/,,,,,,,,,true,true,true,,
+featuresComponents,components,Features Components,item,,,/site/components,/site/components,/component/feature,true,true,true,true,,,,,
+socialMedia,components,Social Media,item,,,/site/components,/site/components,/component/social-media-widget,true,true,true,false,,,,,
+feature_icons,simpleTaxonomy,Feature Icons,item,,,,,,,,,,/site/taxonomy/feature-icons.xml,,
+components,shared-content,Components,item,/site/components,,,,,,,,,,,
+scripts,shared-content,Scripts,item,/scripts/components,,,,,,,,,,,
+networks,simpleTaxonomy,Networks,item,,,,,,,,,,/site/taxonomy/social-media-networks.xml,,
+categories,simpleTaxonomy,Categories,item,,,,,,,,,,,,,/site/taxonomy/categories.xml,,
+segments,simpleTaxonomy,Segments,item,,,,,,,,,,,,,/site/taxonomy/segments.xml,,
+imageUpload,img-desktop-upload,Image Upload,image,/static-assets/images/{objectId},,,,,,,,,,,,
+imageFromRepository,img-repository-upload,Image From Repository,image,/static-assets/images,,,,,,,,,,,false

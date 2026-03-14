@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<page>
+  <content-type>/page/article</content-type>
+  <display-template>/templates/web/pages/article.ftl</display-template>
+  <no-template-required/>
+  <merge-strategy>inherit-levels</merge-strategy>
+  <objectId>8f77d469-6929-5a05-52ce-ba49cba210a0</objectId>
+  <createdDate_dt>2020-01-01T00:00:00.000Z</createdDate_dt>
+  <lastModifiedDate_dt>2020-01-01T00:00:00.000Z</lastModifiedDate_dt>
+  <file-name>index.xml</file-name>
+  <internal-name>New ACME Phone Released Today</internal-name>
+  <title_t>New ACME Phone Released Today</title_t>
+  <header_o item-list="true"/>
+  <left_rail_o item-list="true"/>
+  <subject_t>New ACME Phone Released Today</subject_t>
+  <author_s>John Doe</author_s>
+  <date_dt>2020-07-03T04:00:00.000Z</date_dt>
+  <summary_t>Fusce a augue pulvinar pellentesque magna ac feugiat diam. Vestibulum ultricies ornare elit sed congue.</summary_t>
+  <image_s>/static-assets/images/smartphone-pic.jpg</image_s>
+  <featured_b>false</featured_b>
+  <folder-name>new-acme-phone-released-today</folder-name>
+  <disabled>false</disabled>
+  <createdDate>2020-01-01T00:00:00.000Z</createdDate>
+  <lastModifiedDate>2020-01-01T00:00:00.000Z</lastModifiedDate>
+  <sections_o item-list="true">
+    <item>
+      <section_html><![CDATA[<p>Fusce a augue pulvinar, pellentesque magna ac, feugiat diam. Vestibulum ultricies ornare elit sed congue. Quisque vitae urna lacinia, mollis lorem a, iaculis libero.</p><p>Phasellus gravida elit et arcu venenatis, non accumsan eros accumsan. Donec ut justo sed metus placerat viverra.</p>]]></section_html>
+    </item>
+    <item>
+      <section_html><![CDATA[<p>Etiam suscipit sit amet augue egestas aliquam. Curabitur non nisi et elit eleifend maximus a nec risus. Vivamus pharetra turpis at odio maximus, vitae vestibulum tortor mattis.</p><p>Ut rhoncus ultrices velit. Morbi mattis velit tortor, eget ornare dui sodales ac.</p>]]></section_html>
+    </item>
+  </sections_o>
+</page>
