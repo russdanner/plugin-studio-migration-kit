@@ -1,6 +1,6 @@
 ## Migration Kit – Architecture & Usage Overview
 
-This document describes how the CSV‑driven migration kit for the `migration` sandbox is structured and how it works. It is intended as a durable reference so future work can extend or debug the kit without having to rediscover decisions we already made.
+This document describes how the CSV‑driven migration kit for the `migration` sandbox is structured and how it works. It is intended as a durable reference so future work can extend or debug the kit without having to rediscover decisions we already made. These are instructions and notes for kit developers, not kit users.
 
 ---
 
