@@ -17,9 +17,9 @@ The content importer scripts can handle:
 - Creating blob objects for assets in the repository and importing the related assets (images, video, documents, etc) into S3 (for projects with a large volume of assets)
 - Create generic templates for Experience Builder Editing
   
-### Basic instructions:
+### Usage Instructions:
 
-#### Prepare the data / content
+#### Prepare the Data / Content
 - Add the migration git to your project at the `SANDBOX ROOT`
 - Create the CSV files that contain your content model and content
   - content-import/content-types.csv
