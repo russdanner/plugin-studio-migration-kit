@@ -358,6 +358,73 @@ The kit is **largely data-driven** from the CSVs: content types, fields, order, 
 
 ---
 
+## 11. Creating test data from an existing Crafter site
+
+When you want to populate the migration kit's CSVs from another Crafter sandbox (e.g. **demo**) to get realistic test data, follow this process and checklist. Skipping or misdoing these steps leads to broken templates, missing content, and bad datasources.
+
+### 11.1 Overview
+
+- **Source**: An existing sandbox (e.g. `.../demo/sandbox`) with content types, content items, and assets.
+- **Output**: `content-import/content-types.csv`, `content-import/content.csv`, `content-import/datasources.csv`, and optionally files in `content-import/assets-to-import/`.
+- **Goal**: After import, the migration site should render like the source (same pages, components, and content) and work in Studio/Experience Builder.
+
+If an **export script** exists (e.g. `export_site_to_csv.py`), run it against the source sandbox and then **always** run the validation and fix steps below. Export alone is not enough.
+
+### 11.2 Steps
+
+1. **Clean slate (optional)**  
+   To avoid mixing old and new data: run `cleanup_import_data.py --yes`, then regenerate the three CSVs from the source site (export script or manual extraction).
+
+2. **Export or extract**  
+   - Run the export script if available: e.g. `python3 migration-kit/sub-scripts/export_site_to_csv.py --source /path/to/demo/sandbox`.  
+   - Or extract content types (form-definition + config), content (flattened field/value rows), and datasources (from form-definition `<datasources>`) into the three CSVs.
+
+3. **Copy assets**  
+   - Copy the source site's `static-assets` (or relevant subset) into `content-import/assets-to-import/` so `import_assets.py` can run later. Do **not** copy directly into the migration site's `static-assets/`; the kit expects assets to be imported from `assets-to-import/`.
+
+4. **Apply the validation and fix checklist below** (section 11.3).
+
+5. **Run import**  
+   `python3 migration-kit/import.py` (with `--skip-assets` / `--skip-docs` if desired). Then validate templates (curl + preview token) and Studio.
+
+### 11.3 Validation and fix checklist (test data from existing site)
+
+Use this **every time** you create or refresh test data from an existing site. These items have caused repeated failures when missed.
+
+#### Content completeness
+
+- [ ] **All pages** from the source site are present in `content.csv` (every `index.xml` under the source's `site/website/`).
+- [ ] **All blog posts** (or other listing children) are present as rows in `content.csv` with full field data.
+- [ ] **Index/list pages** (e.g. blog index) reference **only** content that exists in the export.  
+  - Example: If the source has blog posts at `.../blog/2025/07/post-a/` and `.../blog/2025/07/post-b/`, then in `content.csv` the blog index's `blogPosts_o` (or equivalent) must reference those same paths—**not** paths from a different env (e.g. `2024/07/...`) that don't exist in the migration site.
+- [ ] **Repeat groups** (e.g. `enabledCategories_o`, `authorizedRoles`) that exist on the source are present in `content.csv` with the correct repeat-group field name and item index.
+
+#### Datasources
+
+- [ ] **No typos in datasource IDs** used in `content-types.csv`. Fix in both `datasources.csv` and `content-types.csv` (e.g. `industies` → `industries`, `existenImages` → `existingImages` or remove duplicate).
+- [ ] **Every** `Item Manager`, `Image Manager`, and `Dropdown Datasource` value in `content-types.csv` has a matching row in `datasources.csv` (same ID).
+- [ ] **Image/video upload paths** in datasources use consistent, valid paths (e.g. `.../images/pages/{objectId}/` not `.../images/page/...`).
+- [ ] **Page sections datasource** (`pageSectionsSource` or equivalent): its **Content Types** (or Allowed Content Types) list includes **all** section component types used on the source (e.g. overview, trainers, newsletter, catalog, quotes, customRTE, etc.). Otherwise authors cannot add those sections in Studio.
+
+#### Template paths and generator behavior
+
+- [ ] **Display-template paths** in `content.csv` match where the **template generator** (or manual templates) will write FTL files.  
+  - The kit's generator writes **page** templates to `templates/web/<slug>.ftl` (e.g. `entry.ftl`, `generic-page.ftl`), **not** `templates/web/pages/<slug>.ftl`. If the source content points to `.../entry.ftl`, the generator must output to that path so the engine finds the template.
+- [ ] **Page templates** use the **page content variable** `model` in FTL (e.g. `${model.title_t}`). **Component** templates use `contentModel`. The generator must use `model` for pages and `contentModel` for components so that rendering and Experience Builder work.
+- [ ] **Component template aliases**: Source content often references short names (e.g. `header.ftl`, `footer.ftl`, `trainer.ftl`, `catalog.ftl`, `overview.ftl`, `quotes.ftl`, `newsletter.ftl`). If the generator only creates `component-header.ftl`, `component-footer.ftl`, etc., add **copies or symlinks** so that `templates/web/components/header.ftl`, `footer.ftl`, … exist. Same for subpaths (e.g. `catalog-item/catalog-item.ftl`) and for any template under `templates/web/` that content references (e.g. `MediaBanner.ftl`).
+- [ ] **No invalid macro usage** in generated FTL (e.g. `<@crafter.section $model=contentModel>` is not supported; use a plain `<div class=\"page\">` or similar wrapper).
+
+#### After import
+
+- [ ] Run **template test** with preview token: `./migration-kit/scripts/test_pages_curl.sh` (or `check-templates.py`). Fix any FreeMarker errors.
+- [ ] In **Studio**, open the blog index, a blog post, and a few pages; confirm forms load and listed content (e.g. blog posts) appears and links work.
+
+### 11.4 Summary
+
+Creating test data from an existing site is a **export → validate → fix → import** loop. Always run the checklist in 11.3 before treating the CSVs as done; it prevents wrong template paths, missing blogs, broken datasource IDs, and mismatched section types.
+
+---
+
 This document should be kept in sync as we extend the migration kit (new content types, templates, or importer features). Whenever we add a capability (e.g., new embedded patterns, additional page types), we should:
 
 - Update the CSVs.

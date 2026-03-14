@@ -138,11 +138,7 @@ def field_uses_bracket(fid: str) -> bool:
 
 
 def ice_field_id(fid: str) -> str:
-    """Return the field id used by ICE/XB for $field attribute. Uses camelCase for standard hyphenated fields."""
-    if fid == "file-name":
-        return "fileName"
-    if fid == "internal-name":
-        return "internalName"
+    """Return the field id used by ICE/XB for $field attribute. Must match form-definition id exactly (e.g. file-name, internal-name)."""
     return fid
 
 
@@ -172,9 +168,8 @@ def render_repeat_child_ftl(parent_id: str, child: dict) -> str:
     """Generate XB-editable markup for one nested field inside a repeat group (item, idx in scope)."""
     ctype = child["type"]
     cid = child["id"]
-    parent_ice = ice_field_id(parent_id)
-    child_ice = ice_field_id(cid)
-    field_path = f"{parent_ice}.{child_ice}"
+    # $field path must match form-definition ids exactly (e.g. sections_o.section_html)
+    field_path = f"{parent_id}.{cid}"
     item_val = _item_ref(cid)
     if ctype == "rte":
         return f'<@crafter.div $field="{field_path}" $index=idx>\n              ${{{item_val}}}\n            </@crafter.div>'
@@ -196,7 +191,7 @@ def render_field_ftl(field: dict) -> str:
     ftype = field["type"]
     fid = field["id"]
     ftitle = field["title"]
-    ice_id = ice_field_id(fid)  # ICE/XB expects fileName, internalName for $field
+    ice_id = ice_field_id(fid)
     bracket = field_uses_bracket(fid)
     model_val = ftl_safe_id(fid)
 
@@ -310,7 +305,7 @@ def _page_accent_for_content_type(content_type_path: str) -> str:
     return PAGE_ACCENTS[idx]
 
 
-def build_css(num_sections: int, content_type_path: str = "") -> str:
+def build_css(content_type_path: str = "") -> str:
     page_accent = _page_accent_for_content_type(content_type_path) if content_type_path else PAGE_ACCENTS[0]
     lines = [
         "    /* White sections; page-level accent background */",
@@ -327,9 +322,7 @@ def build_css(num_sections: int, content_type_path: str = "") -> str:
         "    .page__header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 2.5rem; gap: 1.5rem; }",
         "    .page__header-primary { display: flex; flex-direction: column; gap: 0.2rem; }",
         "    .page__title { font-size: 1.25rem; font-weight: 700; color: var(--text); letter-spacing: -0.02em; }",
-        "    .sections-grid { display: grid; gap: 1.75rem; align-items: flex-start; "
-        + ("grid-template-columns: minmax(0, 2.2fr) minmax(0, 1.6fr); " if num_sections == 2 else "grid-template-columns: minmax(0, 1fr); ")
-        + "}",
+        "    .sections-grid { display: grid; gap: 1.75rem; align-items: flex-start; grid-template-columns: minmax(0, 1fr); }",
         "    .section { border-radius: var(--radius); border: 1px solid var(--border); overflow: hidden; box-shadow: 0 12px 28px -8px rgba(0, 0, 0, 0.18), 0 6px 14px -6px rgba(0, 0, 0, 0.12); }",
         "    .section__header { background: #f3f4f6; padding: 1rem 1.75rem; border-bottom: 1px solid rgba(0, 0, 0, 0.1); }",
         "    .section__title { margin: 0; font-size: 1.0625rem; font-weight: 600; color: #374151; letter-spacing: -0.01em; }",
@@ -344,7 +337,6 @@ def build_css(num_sections: int, content_type_path: str = "") -> str:
         "    .field__collection-item { border: 1px solid var(--border); border-radius: var(--radius); padding: 0.3rem 0.65rem; font-size: 0.8125rem; font-weight: 400; background: var(--surface); color: var(--text); }",
         "    .field__help { margin-top: 0.35rem; font-size: 0.8125rem; color: var(--muted); }",
         "    .page__footer { padding: 1.5rem 2rem 2rem; font-size: 0.8125rem; text-align: center; color: var(--muted); border-top: 1px solid var(--border); margin-top: 2.5rem; }",
-        "    @media (max-width: 960px) { .sections-grid { grid-template-columns: minmax(0, 1fr); } }",
         "  </style>",
     ]
     return "\n".join(lines)
@@ -393,7 +385,7 @@ def generate_ftl(data: dict, page_title_expr: str, content_type_path: str = "") 
             f"  <title>{page_title_expr}</title>",
             "",
             "  <style>",
-            build_css(len(data["sections"]), content_type_path),
+            build_css(content_type_path),
             "  <link rel=\"preconnect\" href=\"https://fonts.googleapis.com\">",
             "  <link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>",
             "  <link href=\"https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap\" rel=\"stylesheet\">",
@@ -402,7 +394,6 @@ def generate_ftl(data: dict, page_title_expr: str, content_type_path: str = "") 
             "<body>",
             "<@crafter.body_top/>",
             "",
-            "<@crafter.section $model=contentModel>",
             "<div class=\"page\">",
             "  <main class=\"page__main\">",
             "    <header class=\"page__header\">",
@@ -422,7 +413,6 @@ def generate_ftl(data: dict, page_title_expr: str, content_type_path: str = "") 
             f"    Editing headless fields for <strong>{data['title']}</strong>.",
             "  </footer>",
             "</div>",
-            "</@crafter.section>",
             "",
             "<@crafter.body_bottom/>",
             "</body>",
