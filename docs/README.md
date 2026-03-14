@@ -36,22 +36,6 @@ From the **Crafter sandbox root** (directory that contains `migration-kit/` and 
 # Run full migration (content types + content + content-type docs into sandbox/docs)
 python3 migration-kit/import.py
 ```
-### Import assets (optional)
-From the sandbox root, import files from `content-import/assets-to-import/` into `static-assets`:
-```bash
-# Copy files into static-assets, or create .blob XMLs for S3 (script will prompt)
-python3 migration-kit/sub-scripts/import_assets.py
-python3 migration-kit/sub-scripts/import_assets.py --no-blobs   # copy mode
-python3 migration-kit/sub-scripts/import_assets.py --blobs      # blob mode
-```
-
-### Cleanup import data (manual only)
-To reset for a fresh import (empty assets-to-import and clear CSV data rows, keeping headers):
-```bash
-python3 migration-kit/sub-scripts/cleanup_import_data.py
-python3 migration-kit/sub-scripts/cleanup_import_data.py --yes  # skip confirmation
-```
-
 ### Test
 - Commit the changes made by the script to your sandbox
 - Use Crafter Studio to test content types, content forms and the Experience Builder templates created by the importer.
