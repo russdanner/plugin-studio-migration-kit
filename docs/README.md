@@ -13,8 +13,8 @@ The content importer scripts can handle:
 - Basic content type properties
 - Repeat groups
 - Shared and embedded content relationships
-- Importing images directly
-- Creating blob objects and importing images into S3
+- Importing assets (images, video, documents, etc) into the repository directly (for a small projects / asset volume)
+- Creating blob objects for assets in the repository and importing the related assets (images, video, documents, etc) into S3 (for projects with a large volume of assets)
 - Create generic templates for Experience Builder Editing
   
 ### Basic instructions:
